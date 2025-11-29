@@ -1,0 +1,5 @@
+{
+  "name": "ContractAI Analyst",
+  "description": "A high-capacity contract analysis tool capable of ingesting large PDF documents. It parses legal texts into memory and uses Gemini 1.5/Pro's massive context window to answer specific queries about clauses, percentages, and obligations.",
+  "requestFramePermissions": []
+}
