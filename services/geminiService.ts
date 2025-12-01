@@ -1,4 +1,4 @@
-import { GoogleGenAI, Chat, GenerativeModel } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Message } from "../types";
 
 // Initialize the client
@@ -6,15 +6,14 @@ import { Message } from "../types";
 // Gemini 1.5 Pro/Flash has huge context (1M-2M tokens). 
 // 100,000 pages ~ 40M tokens. This is currently beyond a single context window.
 // However, we will demonstrate the capability for "large" documents within the API limits.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
+const ai = new GoogleGenerativeAI({ apiKey: process.env.API_KEY });
 let chatSession: Chat | null = null;
 let model: GenerativeModel | null = null;
 
 export const initializeChat = async (contextText: string) => {
   try {
     // We use gemini-3-pro-preview for complex reasoning on large text
-    chatSession = ai.chats.create({
+    chatSession = ai.startChat.{
       model: 'gemini-3-pro-preview',
       config: {
         systemInstruction: `You are a high-level Contract Analyst AI. 
