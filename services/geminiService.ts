@@ -1,29 +1,29 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI, Chat, GenerativeModel } from "@google/genai";
 import { Message } from "../types";
 
 // Initialize the client
-// IMPORTANT: In a real app, strict token limits apply. 
-// Gemini 1.5 Pro/Flash has huge context (1M-2M tokens). 
-// 100,000 pages ~ 40M tokens. This is currently beyond a single context window.
-// However, we will demonstrate the capability for "large" documents within the API limits.
-const ai = new GoogleGenerativeAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
 let chatSession: Chat | null = null;
-let model: GenerativeModel | null = null;
 
 export const initializeChat = async (contextText: string) => {
   try {
     // We use gemini-3-pro-preview for complex reasoning on large text
-    chatSession = ai.startChat.{
+    chatSession = ai.chats.create({
       model: 'gemini-3-pro-preview',
       config: {
         systemInstruction: `You are a high-level Contract Analyst AI. 
         Your goal is to answer questions strictly based on the provided contract documents.
         
         Rules:
-        1. Always cite the specific Clause Number (e.g., "Clause 14.2") or Page Number if available in the text.
-        2. Be precise with percentages, dates, and amounts.
-        3. If the information is not in the text, state clearly: "I cannot find this information in the provided documents."
-        4. Do not hallucinate or assume standard contract terms if they are not explicitly written.
+        1. You MUST cite the source for every specific fact, percentage, or obligation you state.
+        2. Citations MUST use this EXACT format: ⦗Clause: <Clause ID> | Page: <number> | File: "<filename>"⦘
+           Example: ⦗Clause: 14.2(a) | Page: 12 | File: "Master_Agreement.pdf"⦘
+           - If the text is a table, header, or general content without a specific clause, use 'N/A' for the Clause ID.
+        3. Determine the Page Number by looking for the nearest preceding "[Page X]" marker in the text provided.
+        4. Identify the Clause Number (e.g., 2.1, 15.3, GCC 4) from the text surrounding the information.
+        5. Do not hallucinate or assume standard contract terms if they are not explicitly written.
+        6. If the information is not in the text, state clearly: "I cannot find this information in the provided documents."
         
         The following is the full content of the uploaded contracts:
         

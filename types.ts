@@ -12,6 +12,7 @@ export interface UploadedFile {
   size: number;
   pageCount: number;
   content: string; // The extracted text
+  fileData?: ArrayBuffer; // Raw PDF data for rendering previews
   status: 'uploading' | 'processing' | 'ready' | 'error';
   errorMessage?: string;
 }

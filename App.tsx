@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Layout, FileText, Trash2, CheckCircle2, RotateCw, Database, AlertTriangle } from 'lucide-react';
 import FileUpload from './components/FileUpload';
@@ -50,7 +49,10 @@ const App: React.FC = () => {
       try {
         setProcessingProgress({ current: 0, total: 0 }); // Reset for new file
         
-        const result = await extractTextFromPDF(file, (loaded, total) => {
+        // Read file as ArrayBuffer for both PDF parsing and future rendering
+        const fileData = await file.arrayBuffer();
+        
+        const result = await extractTextFromPDF(fileData, (loaded, total) => {
           setProcessingProgress({ current: loaded, total });
         });
 
@@ -60,6 +62,7 @@ const App: React.FC = () => {
           size: file.size,
           pageCount: result.pageCount,
           content: result.text,
+          fileData: fileData, // Store the raw data
           status: 'ready'
         };
 
@@ -297,6 +300,7 @@ const App: React.FC = () => {
                 onSendMessage={handleSendMessage}
                 isLoading={isChatLoading}
                 documentsLoaded={documentsLoaded}
+                files={files}
            />
         </div>
       </div>
